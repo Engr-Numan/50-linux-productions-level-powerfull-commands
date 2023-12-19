@@ -1,0 +1,234 @@
+Notes::
+
+
+
+
+
+
+
+
+
+sudo yum install python3
+sudo yum install python3-pip
+
+sudo yum install wkhtmltopdf
+
+
+
+
+
+
+
+
+
+
+ db connect:
+ 
+ mysql -u ingage_ai -h rds-mysql-ingage.cv8sshtoyux5.eu-west-2.rds.amazonaws.com -p
+ 
+ 
+ AKP new db user-creation::::
+ 
+>> CREATE USER 'db-user'@'%' IDENTIFIED BY '@KP00793'; 
+ 
+ Grant Remote Access to user:
+ 
+>> GRANT ALL PRIVILEGES ON *.* TO 'db-user'@'%' WITH GRANT OPTION;
+
+To apply the changes immediately.
+
+>> FLUSH PRIVILEGES;      
+
+
+
+---------------------------------
+
+Database user creation  and grants privliges to connect db remotley----------------->
+
+
+
+
+CREATE USER 'rtuser'@'localhost' IDENTIFIED BY '@UGARcrm00700';
+CREATE USER 'rtuser'@'%' IDENTIFIED BY '@UGARcrm00700';
+GRANT ALL ON . TO 'rtuser'@'localhost';
+GRANT ALL ON . TO 'rtuser'@'%';
+FLUSH PRIVILEGES; 
+EXIT;
+
+
+
+
+
+
+
+
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------
+
+
+SSL management commands::::::
+
+
+  vim /etc/apache2/sites-available/biorbyt.conf
+ 2060  apachectl configtest
+ 2061  systemctl reload apache2.service
+ 2062  a2dissite 000-default.conf
+ 2063  systemctl reload apache2
+ 2064  vim /etc/apache2/sites-available/biorbyt.conf
+ 2065  apachectl configtest
+ 2066  vim /etc/apache2/sites-enabled/biorbyt.conf
+ 2067  apachectl -M
+ 2068  ls /etc/apache2/mods-enabled/
+ 2069  a2enmod ssl
+ 2070  apachectl configtest
+ 2071  vim /etc/apache2/sites-enabled/biorbyt.conf
+ 2072  apachectl configtest
+ 2073  systemctl restart apache2.service
+ 2074  a2dissite biorbyt.conf
+ 2075  systemctl reload apache2
+ 2076  vim /etc/apache2/sites-available/default-ssl.conf
+ 2077  systemctl restart apache2.service
+ 2078  a2ensite default-ssl.conf
+ 2079  systemctl reload apache2
+ 2080  a2dissite default-ssl.conf
+ 2081  systemctl reload apache2
+ 2082  a2ensite biorbyt.conf
+ 2083  systemctl reload apache2
+ 
+ 
+ 
+ How to extract .7z file in centos linux
+ 
+ # yum install p7zip
+ 
+use below command to extract spefic file
+# 7za x file.7z     
+
+
+
+
+
+
+Screen Commands Cheet sheet------------------<<<<<<<<<<<<<<<
+
+ # screen -S <session_name>              Start a new session with session name
+ # screen -ls                            List running sessions /screen 
+ # screen -x                             Attach to a running session	
+ # screen -r <session_name>             Attach to a running session with name
+ # screen -d <session_name>                Detach a running session	
+ # screen -X -S [session # you want to kill] kill     Kill a running session
+ # screen -r -d [session name]                    Accessing a screen that is already attached
+ 
+ 
+ 
+ 
+ 
+ ========================================================================================================
+ 
+ 
+ 
+ 
+ elastic search install using repo  on centos 8 elasticsearch7.16.----------------------<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+ sudo rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch
+  208  sudo vi /etc/yum.repos.d/elasticsearch.repo
+  209  sudo dnf install elasticsearch
+  210  cat /etc/yum.repos.d/elasticsearch.repo
+  211  sudo dnf install java-11-openjdk-devel
+  212  sudo vi /etc/yum.repos.d/elasticsearch.repo
+  
+ [elasticsearch-7.x]
+
+name=Elasticsearch repository for 7.x packages
+
+baseurl=https://artifacts.elastic.co/packages/7.x/yum
+
+gpgcheck=1
+
+gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+
+enabled=1
+
+autorefresh=1
+
+type=rpm-md
+
+  wq!
+  
+#
+  
+  
+  
+  213  sudo dnf install java-11-openjdk-devel
+  214  java -version
+  215  sudo dnf install elasticsearch
+  216  sudo systemctl enable elasticsearch.service --now
+  217  curl -X GET "localhost:9200/"
+
+above method will install 7.17 
+
+
+If you want to install 7.16.1  using rpm package.
+download the package from elasticsearch official website , and install using rpm -ivh
+
+
+
+================================================================================================================================================================================
+
+
+elastic search upgrade-----------------------<<<<<<<<<<<<<<<<<<<<<
+
+
+=====>>>>> Upgrade ES from 7.16.1 to 8.4.3 =====
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.17.0-amd64.deb
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.4.3-amd64.deb
+
+===== First ES will be upgraded to 7.17.0 =====
+dpkg -i elasticsearch-7.17.0-amd64.deb
+systemctl daemon-reload
+systemctl start elasticsearch
+systemctl status elasticsearch
+du -shc /var/lib/elasticsearch/*
+
+===== Once 7.17.0 version is set up. Now upgrade to 8.4.3 =====
+dpkg -i elasticsearch-8.4.3-amd64.deb
+systemctl status elasticsearch
+systemctl daemon-reload
+systemctl status elasticsearch
+systemctl stop elasticsearch
+systemctl start elasticsearch
+systemctl status elasticsearch
+
+du -shc /var/lib/elasticsearch/*
+tail -f /var/log/elasticsearch/elasticsearch.log
+vim /etc/elasticsearch/elasticsearch.yml     ----> see relevant configs and exit
+ip a
+vim /etc/elasticsearch/elasticsearch.yml
+-----edit the network host and add the 2 lines at the end -----
+network.host: 10.100.68.69
+discovery.type: single-node
+ingest.geoip.downloader.enabled: false
+xpack.security.enabled: false                       ===> this is to be false to disable SSL. By default this is true in version 8.4.3
+-----
+systemctl restart elasticsearch
+curl -XGET 10.100.68.69:9200
+netstat -tulpn
+tail -f /var/log/elasticsearch/elasticsearch.log
+=================================================================================================================================================
+
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------
+
+
+Key relevent.
+
+# openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt -in STAR_indianamemorialgroup_com.key -out tauseef.key  = convert key into pkcs# 8 format, as somewhere requried pkcs#8 format. 
