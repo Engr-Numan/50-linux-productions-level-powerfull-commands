@@ -1,0 +1,222 @@
+Php Notes:
+
+
+Installing new version of PHP with PHPbrew:
+===========================================
+
+phpbrew install 8.1.14 +apxs2 +bcmath +bz2 +calendar +ctype +curl +dom +exif +fileinfo +filter +ftp +gd +gettext +hash +iconv +imap +inifile +inline +json +kerberos +libgcc +mbregex +mbstring +mcrypt +mhash +mysql +openssl +session +soap +sockets +sqlite +xml +xmlrpc +zip +zlib +zts +pdo -- --with-kerberos --with-imap-ssl --with-gd=shared --enable-gd-natf --with-jpeg-dir=/usr --with-png-dir=/usr --with-webp-dir=/usr
+
+PHPBrew php version set for Appache:
+=====================================
+1:>>
+open this path:
+---------------
+/usr/lib/apache2/modules
+
+edit new libphp.so file with proper name.
+
+Example:
+
+libphp8.1.14.so  
+
+mv libphp.so libphp8.1.14.so
+
+-----------------------------------------
+
+2:>>
+GO to /etc/apache2/mods-available/
+
+Edit file name:
+-------------------
+a)>>> File will appare with the name of php.load
+
+change the name:... Example for php version 8:
+-----------------------------------------------
+
+==== mv php.load php8.1.load
+
+
+
+================================================
+
+----------------------
+b)>>> and copy php7.conf file and paste it with php version name
+
+
+cp php7.conf php8.1.conf
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+
+3:>>
+
+Edit in Script:
+/bin/set_apache_php
+
+Example:
+--------
+root@RT-LT-571:/bin# cat set_apache_php
+#!/bin/bash
+elif [[ $1 =~ 8 ]]; then
+    sudo a2enmod php8.2 > /dev/null 2>&1;
+    sudo a2dismod php5 > /dev/null 2>&1;
+    sudo a2dismod php7 > /dev/null 2>&1;
+    if [[ $1 =~ 8.2 ]];then
+        echo 'LoadModule php_module        /usr/lib/apache2/modules/libphp8.2.10.so' | sudo tee /etc/apache2/mods-available/php8.2.load
+    fi
+    sudo service apache2 restart;
+fi
+
+
+
+Thats it..
+
+Installing Extension in PHP with PHPBrew
+
+
+   phpbrew ext install apxs2
+   phpbrew ext install curl
+   phpbrew ext install apxs2
+   phpbrew ext install bcmath
+   phpbrew ext install bz2
+   phpbrew ext install calender
+   phpbrew ext install ctype
+   phpbrew ext install exif
+   phpbrew ext install fileinfo
+   phpbrew ext install filter
+   phpbrew ext install ftp
+   phpbrew ext install gd
+   phpbrew ext install gettext
+   phpbrew ext install hash +iconv
+   phpbrew ext install hash
+   phpbrew ext install iconv
+   phpbrew ext install imap
+   phpbrew ext install inifile
+   phpbrew ext install json
+   phpbrew ext install mbstring
+   phpbrew ext install mcrypt
+   phpbrew ext install mhash
+   phpbrew ext install mysql
+   phpbrew ext install openssl
+   phpbrew ext install xml
+   phpbrew ext install xmlrpc
+   phpbrew ext install zip
+   phpbrew ext install pdo
+   phpbrew ext install imap -- --with-kerberos --with-imap-ssl
+   sudo apt install memcached
+   sudo apt install libmemcached-tools -y
+   sudo systemctl start memcached
+   sudo systemctl enable memcached
+   phpbrew ext install sqlsrv
+   phpbrew ext install oauth
+   phpbrew ext install pdo_sqlsrv
+   phpbrew ext install dba
+   phpbrew ext install dom
+   phpbrew ext install intl
+   phpbrew ext install ldap
+   phpbrew ext install mysqli
+   phpbrew ext install mysqlnd
+   phpbrew ext install soap
+
+PHP file: 
+=========
+
+memory_limit = 512M
+max_input_time = 600
+max_execution_time = 1800
+upload_max_filesize = 200M
+post_max_size = 400M
+max_file_uploads = 40
+date.timezone = "UTC"
+error_reporting = E_ALL & E_DEPRECATED & E_STRICT & E_WARNING & E_NOTICE
+display_errors = Off
+expose_php = Offcd S
+
+PHPBrew Most used Commands                                        
+
+phpbrew list
+phpbrew update
+phpbrew known
+phpbrew install php-8.0
+phpbrew switch php-8.0
+php --ini
+php -m
+192.168.x.x/info.php
+vim /bin/set_apache_php
+
+To Change PHP web version
+
+ set_apache_php 8.1
+ 
+ 
+ =============================================================================================================================================
+ 
+ 
+ PHP7.4 8.2 upgrade.-----------------------<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ 
+ 
+ 
+ 
+ =====>>>>> Upgrade PHP version from 7.4 to 8.2 <<<<<=====
+add-apt-repository ppa:ondrej/php
+apt-get update
+apt-get install php8.2 php8.2-dev
+php -v 
+a2dismod php7.4
+a2enmod php8.2
+systemctl restart apache2
+php -v 
+
+=====>>>> Check -y carefully before running below command because php-cli will be upgraded to latest major version <<<<=====
+apt install php8.2-{apcu,bcmath,curl,dom,gd,imap,intl,ldap,mbstring,mcrypt,mysqli,mysqlnd,OAuth,SimpleXML,soap,ssh2,xml,xmlreader,xmlwriter,xsl,zip}
+
+cd /opt/
+mv /home/rolustech/sqlsrv-5.11.1.tgz .
+tar -xzvf sqlsrv-5.11.1.tgz
+cd sqlsrv-5.11.1/
+phpize
+./configure
+make
+make install
+vim /etc/php/8.2/cli/php.ini
+-----
+[sqlsrv]
+extension = sqlsrv.so
+
+memory_limit = 512M
+max_input_time = 600
+max_execution_time = 1800
+upload_max_filesize = 200M
+post_max_size = 400M
+max_file_uploads = 40
+date.timezone = "Europe/Zurich"
+error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_WARNING & ~E_NOTICE
+display_errors = Off
+expose_php = Off
+-----
+
+vim /etc/php/8.2/apache2/php.ini
+-----
+[sqlsrv]
+extension = sqlsrv.so
+
+[mcrypt]
+extension = mcrypt.so
+
+memory_limit = 1000M
+max_input_time = 600
+max_execution_time = 1800
+upload_max_filesize = 200M
+post_max_size = 400M
+max_file_uploads = 40
+date.timezone = "Europe/Zurich"
+error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_WARNING & ~E_NOTICE
+display_errors = Off
+expose_php = Off
+-----
+
+
+systemctl restart apache2
+
+
+
+
