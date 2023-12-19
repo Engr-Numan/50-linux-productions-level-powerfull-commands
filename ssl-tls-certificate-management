@@ -1,0 +1,213 @@
+=====>>>>> PKI (Public Key Infrastructure) <<<<<===== Secure Socket Layer / Transport Layer Security
+Certificate (Public Key) names = *.crt, *.pem
+Private Key names 				= *.key, *-key.pem
+
+>>>>> Pre Req for Nginx <<<<<
+Sestatus = Disabled
+
+yum install openssl -y
+
+1-)===== create own certificate authority CA / RootCA =====
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout RootCA.key -out RootCA.crt
+----->>> Enter your information in the fields as follows:
+1- Country Name – use a 2-letter country code (US for the United States)   ---> country codes 7= https://www.digicert.com/kb/ssl-certificate-country-codes.htm
+2- State – the state in which the domain owner is incorporated
+3- Locality – the city in which the domain owner is incorporated
+4- Organization name – the legal entity that owns the domain
+5- Organizational unit name – the name of the department or group in your organization that deals with certificates
+6- Common name – typically the fully qualified domain name (FQDN), i.e. what the users type in a web browser to navigate to your website
+7- Email address – the webmaster’s email address
+
+2-)===== generate a 2048-bit RSA private key and CSR =====
+sudo openssl req -new -newkey rsa:2048 -nodes -keyout your_domain.key -out your_domain.csr
+sudo openssl req -new -newkey rsa:2048 -nodes -keyout app01.key -out app01.csr
+----->>> Enter your information in the fields as follows:
+1- Country Name – use a 2-letter country code (US for the United States)   ---> country codes 7= https://www.digicert.com/kb/ssl-certificate-country-codes.htm
+2- State – the state in which the domain owner is incorporated
+3- Locality – the city in which the domain owner is incorporated
+4- Organization name – the legal entity that owns the domain
+5- Organizational unit name – the name of the department or group in your organization that deals with certificates
+6- Common name – typically the fully qualified domain name (FQDN), i.e. what the users type in a web browser to navigate to your website
+7- Email address – the webmaster’s email address
+8- Challenge password – an optional password for your key pair
+-----
+
+3-)===== To Convert .pem to .crt =====
+sudo openssl x509 -outform pem -in RootCA.pem -out RootCA.crt
+
+4-)===== To get signed it by RootCA =====
+sudo openssl x509 -req -rsa:2048 -days 2048 -in new.csr -CA RootCA.pem -CAkey RootCA.key -CAcreateserial  -out new.crt
+
+5-) copy the .crt & .key in /etc/keys/ Or Set paths for .crt & .key in the nginx.conf / apache
+6-) Copy RootCA.crt to Trusted root certificate
+7-) To test if server is using correct certificate or not run this command and check if it returns your certificate:
+echo | openssl s_client -showcerts -servername app01.com -connect app01:443 2>/dev/null | openssl x509 -inform pem
+
+===== Removing a passphrase using OpenSSL =====
+1- Copy the private key file into your OpenSSL directory (or specify the path in the command below).
+2- Run this command: openssl rsa -in [original.key] -out [new.key]
+openssl rsa -in server.key -out nopassphrase.key
+3- Enter the passphrase for the original key when asked
+4- The output file [new.key] should now be unencrypted. To verify this open the file with a text editor and check the headers.
+
+
+=====configure a free letsencrypt ssl certificate with apache2 on ubuntu =====
+1- Install the Certbot package:
+sudo apt-get update
+sudo apt-get install certbot python3-certbot-apache
+sudo apt-get install python-certbot-nginx   (for nginx)
+
+2- Make sure that your domain is pointing to the server where you are installing the SSL certificate.
+3- sudo a2enmod ssl
+4- sudo systemctl restart apache2
+5- Run the Certbot command to obtain the SSL certificate:
+sudo certbot --apache -d example.com       (Replace example.com with your domain name)
+sudo certbot --nginx -d example.com -d www.example.com
+
+6- Follow the instructions provided by Certbot to obtain the SSL certificate.
+7- Certbot will ask if you want to redirect HTTP traffic to HTTPS. Answer yes if you want to do so.
+8- Verify that the SSL certificate has been installed correctly by visiting your website using HTTPS. You should see a lock icon in your browser indicating that the connection is secure.
+9- Certbot will automatically renew your SSL certificate before it expires. You can verify this by running the following command:
+sudo certbot renew --dry-run
+
+10- Done 
+
+===== wildcard ssl renewal *.rolustech.com on instances =====
+get into the ssl cert path then upload the tar file in /tmp and run the following command 
+
+mkdir ssl-old && mv STAR_rolustech_com.* ssl-old && tar -xzvf /tmp/SSL-2SEP22.tar.gz && sleep 5 && mv SSL-2SEP22/STAR_rolustech_com.* . && ls -ltr
+systemctl restart apache2
+systemctl restart httpd
+
+===== Extracting Certificate and Private Key Files from a .pfx File =====
+https://wiki.cac.washington.edu/display/infra/Extracting+Certificate+and+Private+Key+Files+from+a+.pfx+File
+
+-----> Purpose
+Customers sometimes have a need to export a certificate and private key from a Windows computer to separate certificate and key files for use elsewhere. Windows doesn't provide the means to complete this process.
+
+-----> Procedure
+1- Take the file you exported and copy it to a system where you have OpenSSL installed. Note: the *.pfx file is in PKCS#12 format and includes both the certificate and the private key.
+2- Run the following command to export the private key: openssl pkcs12 -in certname.pfx -nocerts -out key.pem -nodes
+3- Run the following command to export the certificate: openssl pkcs12 -in certname.pfx -nokeys -out cert-name.crt
+4- Run the following command to remove the passphrase from the private key: openssl rsa -in key.pem -out key-name.key 
+
+===== Generate ssh-keygen =====
+https://linuxize.com/post/how-to-set-up-ssh-keys-on-ubuntu-20-04/
+https://www.ssh.com/academy/ssh/keygen
+
+ssh-keygen -t rsa -b 2048 
+
+----- Create SSH Key File -----
+ssh-keygen -t rsa -b 4096 -C "m.aqibfaizi@gmail.com"
+
+----- removing old key using the ssh-keygen command -----
+ssh-keygen -R [hostname|IP address]
+
+cd ~/.ssh/   
+  NETDOM  /query FSMO
+
+----- RSA Key Generation -----
+https://winscp.net/eng/docs/ui_puttygen
+https://www.youtube.com/watch?v=bYfQbr7vPag
+
+----->>>>> Powershell <<<<<-----
+---> Run as administrator
+C:\Users\hudaib.farooq\.ssh> ssh-keygen -C "hudaib.farooq@rolustech.net"      <<<or>>>   ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+Provide the name of file otherwise it will default name i-e id_rsa
+PS C:\Users\hudaib.farooq\.ssh> ls
+Directory: C:\Users\hudaib.farooq\.ssh
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----         5/12/2022   5:30 PM           2622 id_rsa
+-a----         5/12/2022   5:30 PM            588 id_rsa.pub
+-a----         5/13/2022   3:00 PM            285 known_hosts
+
+---> Copy the id_rsa.pub to your server /home/username/.ssh/
+---On your server-----
+cat id_rsa.pub >> authorized_keys
+cd ..
+chmod 0600 .ssh/*
+ls -l .ssh/ 
+chmod 0700 .ssh/ 
+
+---On your machine---
+C:\Users\hudaib.farooq\.ssh> ssh root@34.67.51.158
+--> This will work
+
+
+==============================================================================================
+-------Configuration in Nginx------
+
+server {
+    listen 443 default ssl;
+    server_name app.meymaar;
+    location / {
+        proxy_pass http://app.meymaar:3000/;
+    }
+    ssl_certificate      /root/certs/app.meymaar.crt;
+    ssl_certificate_key  /root/certs/app.meymaar.key;
+    ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+    ssl_session_cache   shared:SSL:10m;
+    ssl_session_timeout 10m;
+  }
+
+server {
+    listen 443 ssl;
+    server_name api.meymaar;
+    location / {
+        proxy_pass http://api.meymaar:8080;
+    }
+    ssl_certificate      /root/certs/api.meymaar.crt;
+    ssl_certificate_key  /root/certs/api.meymaar.key;
+    ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+    ssl_session_cache   shared:SSL:10m;
+    ssl_session_timeout 10m;
+    client_max_body_size 1G;
+  }
+
+server {
+    listen 443 ssl;
+    server_name model.meymaar;
+    location / {
+        proxy_pass http://model.meymaar:3001;
+    }
+    ssl_certificate      /root/certs/model.meymaar.crt;
+    ssl_certificate_key  /root/certs/model.meymaar.key;
+    ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+    ssl_session_cache   shared:SSL:10m;
+    ssl_session_timeout 10m;
+  }
+
+server {
+    listen 443 ssl;
+    server_name notification.meymaar;
+    location / {
+        proxy_pass http://notification.meymaar:5700;
+    }
+    ssl_certificate      /root/certs/notification.meymaar.crt;
+    ssl_certificate_key  /root/certs/notification.meymaar.key;
+    ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+    ssl_session_cache   shared:SSL:10m;
+    ssl_session_timeout 10m;
+  }
+
+===== Convert PPK to PEM ===== https://tecadmin.net/convert-ppk-to-pem-using-command/
+--> Method 1: Convert PPK to PEM in Linux Using `puttygen`
+sudo apt install putty-tools 
+puttygen ole-new.ppk -O private-openssh -o ole-new.pem 
+
+Method 2: Convert PPK to PEM in Linux Using `openssl`
+openssl pkcs8 -inform DER -in ole-new.ppk -outform PEM -out ole-new.pem 
+
+Method 3: Convert PPK to PEM on Windows with PuTTYgen
+-> Launch PuTTYgen application
+-> Under File menu, click Load private key.
+-> Select your .ppk file, and then choose Open.
+-> Now, under the Conversions menu, click Export OpenSSH Key (force new file format).
+-> Set a new name with the “.pem” extension and click the “Save” button
+
+===== convert the private key from the Java keystore format to the PEM format used by OpenSSL ===== 
+keytool -importkeystore -srckeystore STAR_rolustech_com.key -destkeystore generated.p12 -deststoretype PKCS12
+openssl pkcs12 -in STAR_rolustech_com.key -out generated.pem -nocerts
+
