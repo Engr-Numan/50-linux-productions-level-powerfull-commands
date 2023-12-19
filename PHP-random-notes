@@ -1,0 +1,195 @@
+php -i | grep extension_dir
+php -ini | grep Loaded
+php -m 
+php -l test.php
+locate xdebug.ini
+error_reporting = E_ALL & ~E_WARNING & ~E_NOTICE & ~E_STRICT
+
+----- Increase session timeout for sugarcrm client -----
+session.gc_maxlifetime = 172800 (48 hours)
+
+----- Upgrade PHP version OLD to NEW on Ubuntu -----
+phpbrew --version
+
+php -v
+
+phpbrew update
+
+phpbrew known
+
+phpbrew install 7.4.27 +apxs2 +bcmath +bz2 +calendar +ctype +curl +dom +exif +fileinfo +filter +ftp +gd +gettext +hash +iconv +imap +inifile +inline +json +kerberos +libgcc +mbregex +mbstring +mcrypt +mhash +mysql +openssl +session +soap +sockets +sqlite +xml +xmlrpc +zip +zlib +zts +pdo -- --with-kerberos --with-imap-ssl --with-gd=shared --enable-gd-natf --with-jpeg-dir=/usr --with-png-dir=/usr --with-webp-dir=/usr 
+
+phpbrew list
+
+vim /bin/set_apache_php
+### Set the versions in this file accordingly as this whole file is available in RT IMP/php folder
+
+su {username}
+(get pass from the user)
+
+php -v
+
+phpbrew list
+
+phpbrew switch php-7.3.25
+
+sudo set_apache_php 7.2
+
+php -v
+
+phpbrew off
+
+----- PHP Extension install -----
+phpbrew ext install ext-name
+
+----- IMP commands -----
+apache2 -v 
+mysqladmin --version
+sudo set_apache_php 7.3
+
+----- T-Shooting -----
+/etc/apt/sources.list.d/php      -----> source list path on stg instance
+
+apt-get install libzip-dev
+
+vim /etc/apache2/mods-available/php7.load			### Check path from here and see if the .so file is available in that path of that version 
+	LoadModule php7_module        /usr/lib/apache2/modules/libphp7.3.8.so
+
+### if it's not available than simply install php again by phpbrew install wali puri command
+
+a2dismod php7
+a2dismod php5
+a2enmod php7.4
+
+sudo set_apache_php 7.3
+
+cd /home/hassan.ali
+mv .phpbrew .phpbrew-old
+
+vim /var/www/html/info.php
+
+
+-----> Test for .htaccess rewrites failed. This usually means you do not have AllowOverride set up for Sugar directory.
+vi /opt/sugarcrm-LIVE/install/installSystemCheck.php
+:379
+// if($res != "SUCCESS") {
+if(false){
+
+
+
+-------------------------------------------------
+<?php
+
+// Show all information, defaults to INFO_ALL
+phpinfo();
+
+// Show just the module information.
+// phpinfo(8) yields identical results.
+phpinfo(INFO_MODULES);
+
+?>
+-------------------------------------------------
+
+===== ubuntu php uninstall =====
+
+sudo apt-get purge php7.* && sudo apt-get autoclean && sudo apt-get autoremove
+
+
+vim /etc/php.ini
+-----
+output_buffering = 4096
+-----
+
+===== Old releases / version =======
+https://www.php.net/releases/index.php
+
+
+===== Default php.ini RT systems =====
+memory_limit = 512M
+max_input_time = 600
+max_execution_time = 1800
+upload_max_filesize = 200M
+post_max_size = 400M
+max_file_uploads = 40
+date.timezone = "UTC"
+error_reporting = E_ALL & E_DEPRECATED & E_STRICT & E_WARNING & E_NOTICE
+display_errors = Off
+expose_php = Offcd S
+
+
+
+
+
+
+
+
+PHP extension  sqlsrv isntall by source compile method-----> 
+
+---> download the package into .tgz file into server if wget not work, download into your local window machine and then copy into the ec2-server by using scp command on cmd terminnal.
+
+website url:--->   https://pecl.php.net/package/sqlsrv   goto available releases- and click on  on latest package which is .tgz file...  download it.
+
+copy this package to the server using scp ''command'' ,  if you using mobaexterm it can upload easily to the directory..
+
+# tar -xzf sqlsrv-5.11.1.tgz ---- to extract the tfz file into direcoty
+
+# sudo apt-get install php-dev unixodbc-dev  ------- isntall the dependency pacakges
+
+
+# cd   cd sqlsrv-5.11.1
+
+
+# ls -l -----  check multiple files present here. 
+
+# phpize     ---->    execute this command as it is
+
+# ./configure      ------>      execute it
+
+
+#  make  
+
+
+# make install 
+
+
+Installing shared extensions:     /usr/lib/php/20220829/ -----> it means it is installed directly... 
+
+
+----Now we have to    add into the .ini file .
+ 
+#    echo "extension=sqlsrv.so" | sudo tee /etc/php/8.2/cli/conf.d/20-sqlsrv.ini   ---> for   php  cli backend
+
+#  echo "extension=sqlsrv.so" | sudo tee /etc/php/8.2/apache2/conf.d/20-sqlsrv.ini  ----->  for php apache2   frontend. 
+
+
+you can verify it is installed by typing command 
+
+# php -m | grep sqlsrv
+
+
+
+------------------------------------****************---------------------->
+
+Symfony:  setup
+
+
+
+
+Symfony setup: 
+sudo apt update
+sudo apt upgrade
+
+sudo apt install php php-json php-ctype php-curl php-mbstring php-xml php-zip php-tokenizer php-tokenizer libpcre3 --no-install-recommends
+sudo apt install git zip unzip
+wget https://get.symfony.com/cli/installer -O - | bash
+export PATH="$HOME/.symfony/bin:$PATH".
+source ~/.bashrc
+
+git config --global user.email "Your_Email_Address"
+git config --global user.name "Your_User_Name"
+
+symfony new --webapp my_project ---> for traditional weba application...
+symfony new my_project
+
+cd my_project
+symfony server:start
